@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "default": "dev-needlist",
+    "staging": "staging-needlist",
+    "production": "prod-needlist",
+    "infositedev": "dev-infosite"
+  },
+  "targets": {},
+  "etags": {}
+}

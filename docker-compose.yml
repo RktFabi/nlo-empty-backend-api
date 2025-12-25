@@ -1,0 +1,80 @@
+services:
+  # ---------- Nest API (dev: hot reload, using dev environment)
+  api:
+    build:
+      context: .
+      target: dev
+    container_name: api-dev
+    env_file:
+      - .env.development
+    environment:
+      # force local path in main.ts
+      - HOST=0.0.0.0
+      - PORT=3000
+      # Ensure Admin SDK has a project ID in emulator mode
+      - GCLOUD_PROJECT=dev-needlist
+      - GOOGLE_CLOUD_PROJECT=dev-needlist
+      - FIREBASE_PROJECT_ID=dev-needlist
+      # Swagger base path is already /docs in your main.ts
+    ports:
+      - "3000:3000"     # API
+      - "9229:9229"     # Debugger (optional)
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  # ---------- Firebase Emulators (Firestore 8085, Auth 9099, UI 4000)
+  emulators:
+    image: node:20-alpine
+    container_name: firebase-emulators
+    working_dir: /workspace
+    command: >
+      sh -lc "
+        apk add --no-cache openjdk21-jre-headless &&
+        npx -y firebase-tools@13.15.0 emulators:start --config /workspace/firebase.json --project dev-needlist --only firestore,auth --import=/workspace/.firebase-data --export-on-exit
+      "
+    volumes:
+      - .:/workspace
+      - firebase-cache:/root/.cache
+    ports:
+      - "4000:4000"  # Emulator UI
+    expose:
+      - "8085"  # Firestore
+      - "9099"  # Auth
+    environment:
+      - GCLOUD_PROJECT=dev-needlist
+      - GOOGLE_CLOUD_PROJECT=dev-needlist
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8085 | grep -q ok"]
+      interval: 1s
+      timeout: 1s
+      retries: 120
+      start_period: 2s
+    profiles: ["emu"] # only runs when the emu profile is active
+  
+  # Optional: a test runner that targets the emulators
+  api-test:
+    build:
+      context: .
+      target: dev
+    env_file:
+      - .env.development
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - FIRESTORE_EMULATOR_HOST=emulators:8085
+      - FIREBASE_AUTH_EMULATOR_HOST=emulators:9099
+      - GCLOUD_PROJECT=dev-needlist
+      - GOOGLE_CLOUD_PROJECT=dev-needlist
+    working_dir: /app
+    command: npm test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    # depends_on:
+    #   emulators:
+    #     condition: service_healthy # <- The test will only start if the emulators are healthy
+    profiles: ["emu"]  # <— only when you enable emu
+
+volumes:
+  firebase-cache:

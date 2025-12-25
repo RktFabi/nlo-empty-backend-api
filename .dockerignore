@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+.git
+.gitignore
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+.env*
+firebase-debug.log
+.firebase/
+.firebaserc
+firebase.json
+firestore.rules
+firestore.indexes.json
