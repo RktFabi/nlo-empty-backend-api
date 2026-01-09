@@ -26,6 +26,8 @@ env3/
 .env.production
 .env.staging
 .env.development
+.env.infodev
+.env.infositedev
 *egg-info*
 dist/
 Icon?
@@ -44,6 +46,8 @@ server/app/static/uploads/*
 
 prod-needlist-firebase-adminsdk-fbsvc-0939a814f4.json
 staging-needlist-firebase-adminsdk-84et7-0ddc920240.json
+dev-infosite-firebase-adminsdk-fbsvc-6de20c7124.json
+dev-needlist-firebase-adminsdk-y6w20-fc58a47ee8.json
 .env
 
 # Debug files

@@ -50,4 +50,16 @@ export class NeedListController {
   ): Promise<AllNeedListsDto[]> {
     return await this.needListService.findAll(sort, startAfter, limit);
   }
+
+
+
+  @Get(':id')
+  @ApiOkResponse({ description: 'Successfully retrieved need list by ID.', type: [AllNeedListsDto] })
+  @ApiInternalServerErrorResponse({
+    description: 'Failed to retrieve need list by ID',
+  })
+  @ApiNotFoundResponse({ description: 'Need list not found' })
+  async findOne(@Param('id') id: string): Promise<AllNeedListsDto> {
+    return await this.needListService.findOne(id);
+  }
 }

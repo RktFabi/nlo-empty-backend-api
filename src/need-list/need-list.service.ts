@@ -71,4 +71,25 @@ export class NeedListService {
       excludeExtraneousValues: true,
     });
   }
+
+  async findOne(id: string): Promise<AllNeedListsDto> {
+    // Instead of using a query, we can use a direct document reference. Much efficient for this case.
+    
+    // Get the document reference
+    const docRef = this.firestore.collection(this.collectionName).doc(id);
+    const doc = await docRef.get();
+
+    // Check if the document exists and has data
+    if (!doc.exists && !doc.data()) {
+      throw new NotFoundException('Need list not found');
+    }
+
+    // Convert the document data to the DTO
+    return plainToInstance(AllNeedListsDto, {
+      id: doc.id,
+      ...sanitizeFirestoreData(doc.data()!)
+    }, {
+      excludeExtraneousValues: true,
+    });
+  }
 }
