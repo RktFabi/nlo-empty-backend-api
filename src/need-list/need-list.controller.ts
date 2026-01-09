@@ -27,6 +27,7 @@ export class NeedListController {
     @Query('limit') limit?: number,
   ): Promise<AllNeedListsDto[]> {
     // You will need to add things here
-    return [];
+    const data = await this.needListService.findAll(sort, startAfter, limit);
+    return data;
   }
 }
