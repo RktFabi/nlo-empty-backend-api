@@ -1,20 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { NeedList } from './models/need-list.interface';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { AllNeedListsDto } from './models/all-needlists.dto';
+import { NeedList } from './models/need-list.interface';
+
 import { plainToInstance } from 'class-transformer';
-import {
-  sanitizeFirestoreData,
-  convertToRef,
-} from '../common/firestore/firestore.utils';
+import { convertToRef, sanitizeFirestoreData } from '../common/firestore/firestore.utils';
+import { AllNeedListsDto } from './models/all-needlists.dto';
+
 @Injectable()
 export class NeedListService {
   private readonly collectionName = 'needlists';
 
   constructor(
-    @Inject('FIRESTORE')
-    private readonly firestore: firestore.Firestore,
-  ) { }
+    @Inject('FIRESTORE') private readonly firestore: firestore.Firestore,
+  ) {}
 
   // !!!! This function will throw error for multiple orderBy (Firebase indexes needed)
   // Let's leave this part here, it's a bit tricky
@@ -31,8 +29,7 @@ export class NeedListService {
     if (sort && sort.trim() !== '') {
       const sortFields = sort.split(',').map((s) => {
         const [field, order] = s.split(':');
-        const direction: FirebaseFirestore.OrderByDirection =
-          order?.toLowerCase() === 'asc' ? 'asc' : 'desc';
+        const direction: FirebaseFirestore.OrderByDirection = order?.toLowerCase() === 'asc' ? 'asc' : 'desc';
         return { field: field.trim(), direction };
       });
 
@@ -62,7 +59,7 @@ export class NeedListService {
     const snapshot = await query.limit(Number(limit)).get();
 
     if (snapshot.empty) {
-      return [];
+      throw new NotFoundException('No needlists found');
     }
 
     // Use class-transformer to convert and clean data
