@@ -74,4 +74,25 @@ export class NeedListService {
       excludeExtraneousValues: true,
     });
   }
-}
+
+  async findOne(id: string):
+  Promise<AllNeedListsDto | undefined> {
+    let docRef = this.firestore.collection(this.collectionName).doc(id);
+    const snapshot = await docRef.get();
+
+    if (!snapshot) {
+      return undefined;
+    }
+
+    const rawDocs = ({
+      id: snapshot.id,
+      ...sanitizeFirestoreData(snapshot.data()!),
+    });
+    return plainToInstance(AllNeedListsDto, rawDocs, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+
+  }
+

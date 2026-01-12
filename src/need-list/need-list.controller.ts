@@ -30,4 +30,14 @@ export class NeedListController {
     const data = await this.needListService.findAll(sort, startAfter, limit);
     return data;
   }
-}
+
+  @Get(':id')
+  @ApiOkResponse({ description: 'Successfully retrieved A Single Need List', type: AllNeedListsDto })
+  async findOne(@Param('id') id: string): 
+    Promise<AllNeedListsDto | undefined> {
+    // You will need to add things here
+    const data = await this.needListService.findOne(id)
+    return data;
+  }
+  }
+
