@@ -61,3 +61,12 @@ firebase-debug.log
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 firestore-debug.log
+
+# env files
+env
+env.*
+.env
+.env.*
+
+# service accounts
+*-firebase-adminsdk-*.json

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards, ParseIntPipe  } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiQuery, ApiOkResponse } from '@nestjs/swagger';
 import { NeedListService } from './need-list.service';
 import { CreateNeedListDto } from './models/create-needlist.dto';
@@ -24,13 +24,14 @@ export class NeedListController {
   async findAll(
     @Query('sort') sort: string,
     @Query('startAfter') startAfter?: string,
-    @Query('limit') limit?: number,
+    @Query('limit', new ParseIntPipe({ optional:true })) limit?: number,
   ): Promise<AllNeedListsDto[]> {
-    // You will need to add things here
-    return [];
-
+    const parsedLimit = limit ?? 10;
+    return this.needListService.findAll(sort, startAfter, parsedLimit);
 
   }
+
+  
     @Get(':id')
     @ApiOkResponse({
       description: 'Successfully retrieved a single need list.',
