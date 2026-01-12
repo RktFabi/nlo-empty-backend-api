@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { NeedList } from './models/need-list.interface';
 import { firestore } from 'firebase-admin';
 import { AllNeedListsDto } from './models/all-needlists.dto';
@@ -73,5 +73,18 @@ export class NeedListService {
     return plainToInstance(AllNeedListsDto, rawDocs, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async findOne(id: string): Promise<AllNeedListsDto> {
+    const docRef = this.firestore.collection(this.collectionName).doc(id);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      throw new Error('NeedList not found');
+    }
+    return plainToInstance(AllNeedListsDto, {
+      id: doc.id,
+      ...sanitizeFirestoreData(doc.data()!)}, {
+        excludeExtraneousValues: true,
+      });
   }
 }

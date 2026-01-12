@@ -28,5 +28,15 @@ export class NeedListController {
   ): Promise<AllNeedListsDto[]> {
     // You will need to add things here
     return [];
+
+
   }
+    @Get(':id')
+    @ApiOkResponse({
+      description: 'Successfully retrieved a single need list.',
+      type: AllNeedListsDto
+    })
+    async findOne(@Param('id') id: string): Promise<AllNeedListsDto> {
+      return this.needListService.findOne(id);
+    }
 }
