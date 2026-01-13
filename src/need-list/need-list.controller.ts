@@ -27,7 +27,7 @@ export class NeedListController {
     @Query('limit', new ParseIntPipe({ optional:true })) limit?: number,
   ): Promise<AllNeedListsDto[]> {
     const parsedLimit = limit ?? 10;
-    return this.needListService.findAll(sort, startAfter, parsedLimit);
+    return await this.needListService.findAll(sort, startAfter, parsedLimit);
 
   }
 
@@ -38,6 +38,6 @@ export class NeedListController {
       type: AllNeedListsDto
     })
     async findOne(@Param('id') id: string): Promise<AllNeedListsDto> {
-      return this.needListService.findOne(id);
+      return await this.needListService.findOne(id);
     }
 }
