@@ -1,15 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { AllNeedListsDto } from './models/all-needlists.dto';
-import { CreateNeedListDto } from './models/create-needlist.dto';
-import { NeedList } from './models/need-list.interface';
 import { NeedListService } from './need-list.service';
 
 // import { AuthGuard } from '../common/guards/auth.guard';
@@ -37,6 +34,12 @@ export class NeedListController {
     description: 'Pagination cursor (values from the last item\’s sort fields)',
   })
   @ApiQuery({ name: 'limit', required: false, example: 10, description: 'Limit the number of results returned' })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    example: 'Food',
+    description: 'Prefix search by need list name (starts-with)',
+  })
   // @ApiResponse({ status: 200, description: 'List all need lists', type: [Object] })
   @ApiOkResponse({ description: 'Successfully retrieved need lists.', type: [AllNeedListsDto] })
   @ApiInternalServerErrorResponse({
@@ -47,8 +50,9 @@ export class NeedListController {
     @Query('sort') sort: string,
     @Query('startAfter') startAfter?: string,
     @Query('limit') limit?: number,
+    @Query('name') name?: string,
   ): Promise<AllNeedListsDto[]> {
-    return await this.needListService.findAll(sort, startAfter, limit);
+    return await this.needListService.findAll(sort, startAfter, limit, name);
   }
 
 

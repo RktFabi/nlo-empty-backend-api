@@ -1,9 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { NeedList } from './models/need-list.interface';
 
 import { plainToInstance } from 'class-transformer';
-import { convertToRef, sanitizeFirestoreData } from '../common/firestore/firestore.utils';
+import { sanitizeFirestoreData } from '../common/firestore/firestore.utils';
 import { AllNeedListsDto } from './models/all-needlists.dto';
 
 @Injectable()
@@ -20,13 +19,20 @@ export class NeedListService {
     sort?: string,
     startAfter?: string,
     limit = 10,
+    name?: string,
   ): Promise<AllNeedListsDto[]> {
     let query: FirebaseFirestore.Query = this.firestore.collection(
       this.collectionName,
     );
 
-    // 🔹 Parse all sort fields
-    if (sort && sort.trim() !== '') {
+    const namePrefix = typeof name === 'string' ? name.trim() : '';
+    if (namePrefix !== '') {
+      query = query
+        .orderBy('needlist_name')
+        .startAt(namePrefix)
+        .endAt(`${namePrefix}\uf8ff`);
+    } else if (sort && sort.trim() !== '') {
+      // 🔹 Parse all sort fields
       const sortFields = sort.split(',').map((s) => {
         const [field, order] = s.split(':');
         const direction: FirebaseFirestore.OrderByDirection = order?.toLowerCase() === 'asc' ? 'asc' : 'desc';
