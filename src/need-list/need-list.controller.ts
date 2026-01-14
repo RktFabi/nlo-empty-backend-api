@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiQuery, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiQuery, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { NeedListService } from './need-list.service';
 import { CreateNeedListDto } from './models/create-needlist.dto';
 import { NeedList } from './models/need-list.interface';
@@ -33,6 +33,7 @@ export class NeedListController {
   // Add one needlist endpoint
   @Get(':id')
   @ApiOkResponse({ description: 'Successfully retrieved A Single Need List', type: AllNeedListsDto })
+  @ApiNotFoundResponse({ description: 'The need list with the provided ID was not found.' })
   async findOne(@Param('id') id: string): 
     Promise<AllNeedListsDto | undefined> {
     const data = await this.needListService.findOne(id);
