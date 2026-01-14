@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException} from '@nestjs/common';
 import { NeedList } from './models/need-list.interface';
 import { firestore } from 'firebase-admin';
 import { AllNeedListsDto } from './models/all-needlists.dto';
@@ -80,8 +80,8 @@ export class NeedListService {
     let docRef = this.firestore.collection(this.collectionName).doc(id);
     const snapshot = await docRef.get();
 
-    if (!snapshot) {
-      return undefined;
+    if (!snapshot.exists) {
+      throw new NotFoundException(`Document with ID ${id} not found`);
     }
 
     const rawDocs = ({
