@@ -80,7 +80,7 @@ export class NeedListService {
     const doc = await docRef.get();
 
     // Check if the document exists and has data
-    if (!doc.exists && !doc.data()) {
+    if (!doc.exists || !doc.data()) {
       throw new NotFoundException('Need list not found');
     }
 
