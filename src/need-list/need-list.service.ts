@@ -79,7 +79,8 @@ export class NeedListService {
     const docRef = this.firestore.collection(this.collectionName).doc(id);
     const doc = await docRef.get();
     if (!doc.exists) {
-      throw new Error('NeedList not found');
+      //throw new Error('NeedList not found');
+      throw new NotFoundException('NeedList not found');
     }
     return plainToInstance(AllNeedListsDto, {
       id: doc.id,
